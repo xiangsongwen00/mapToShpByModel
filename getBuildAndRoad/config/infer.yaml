@@ -1,0 +1,24 @@
+project_root: .
+input_dir: data/tiff
+output_dir: getBuildAndRoad/outputs
+job_id: null
+device: auto
+batch_size: 4
+
+# 可填写训练运行目录，或 checkpoints/best.pt 的路径。至少配置一个。
+models:
+  building: trainModel/runs/building/20260919_165624
+  road: trainModel/runs/road/20260919_175028
+
+postprocess:
+  building:
+    threshold: 0.5
+    min_area_m2: 4.0
+    close_gap_m: 0.0
+  road:
+    threshold: 0.5
+    min_area_m2: 8.0
+    close_gap_m: 1.0
+    centerline: false
+    min_line_pixels: 10
+

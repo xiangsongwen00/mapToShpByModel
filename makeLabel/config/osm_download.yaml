@@ -1,0 +1,56 @@
+project_root: .
+input_dir: data/tiff
+
+osm:
+  # 分块缓存与最终成果均为 GeoPackage；不再持久化 Overpass JSON。
+  cache_dir: data/osm_cache
+  legacy_json_dir: data/osm_raw
+  candidate_dir: data/labels/osm_candidates
+  remove_legacy_json_after_conversion: true
+  vector_format: GPKG
+
+  # 每幅 TIFF 继续切成小网格，降低 Overpass 超时和内存压力。
+  # 0.015 度在当前纬度约为 1.4×1.7 km。
+  max_span_deg: 0.015
+  resume: true
+  overwrite_candidates: false
+  query_timeout: 180
+  retries: 4
+  retry_delay_seconds: 2.0
+  request_delay_seconds: 0.5
+  user_agent: BuildAndRoadModel/1.0 (local research)
+
+  # 单个节点失败时轮换备用节点。
+  endpoints:
+    - https://overpass-api.de/api/interpreter
+    - https://overpass.kumi.systems/api/interpreter
+
+  # 默认排除非机动车道路，可按项目口径调整。
+  excluded_highways:
+    - footway
+    - steps
+    - path
+    - cycleway
+    - bridleway
+    - corridor
+    - platform
+    - proposed
+    - construction
+
+  default_road_width_m: 5.0
+  road_width_m:
+    motorway: 18
+    motorway_link: 8
+    trunk: 14
+    trunk_link: 7
+    primary: 12
+    primary_link: 7
+    secondary: 10
+    secondary_link: 6
+    tertiary: 8
+    tertiary_link: 5
+    residential: 6
+    unclassified: 5
+    service: 4
+    living_street: 5
+    track: 3

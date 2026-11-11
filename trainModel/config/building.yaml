@@ -1,0 +1,23 @@
+project_root: .
+manifest: data/datasets/baseline_v1/manifest.csv
+task: building
+runs_dir: trainModel/runs
+device: auto
+allow_cpu: false
+model:
+  name: tiny_unet
+  base_channels: 32
+tile_size: 512
+inference_stride: 256
+batch_size: 4
+gradient_accumulation: 2
+epochs: 100
+learning_rate: 0.0003
+weight_decay: 0.0001
+mixed_precision: true
+early_stopping_patience: 15
+num_workers: 0
+seed: 20260919
+threshold: 0.5
+bootstrap_without_reliable_validation: true
+resume: null

@@ -1,0 +1,2 @@
+"""Label production stage."""
+

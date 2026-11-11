@@ -1,0 +1,74 @@
+project_root: .
+input_dir: data/tiff
+labels_dir: data/labels
+dataset_dir: data/datasets
+dataset_version: baseline_v1
+
+# 推荐先单独运行：python makeLabel/index.py --download-osm
+# 如设为 true，本阶段会先下载候选再继续切片（通常不建议跳过人工复核）。
+download_osm: false
+# 防止误生成全空训练集；只有流程测试时才设为 true。
+allow_empty_labels: false
+overpass_endpoint: https://overpass-api.de/api/interpreter
+request_timeout: 240
+user_agent: BuildAndRoadModel/1.0
+
+osm:
+  candidate_dir: data/labels/osm_candidates
+
+# 建筑训练目标固定为地面底座。OSM building_base 不需要偏移。
+# 只有正式标注文件仅含 building_roof 时，才使用下面的屋顶→底座规则。
+building:
+  target: base
+  roof_to_base:
+    mode: none
+    # 可用模式：
+    # fixed_pixels: dx_pixels/dy_pixels，x向右、y向下
+    # feature_pixels: 每栋建筑使用 base_dx_px/base_dy_px 字段
+    # fixed_metres: east_m/north_m
+    # angle_height: off_nadir_deg、correction_azimuth_deg、default_height_m
+    per_image: {}
+
+tile_size: 512
+stride: 256
+building_all_touched: false
+road_all_touched: true
+default_road_width_m: 5.0
+road_width_m:
+  motorway: 18
+  trunk: 14
+  primary: 12
+  secondary: 10
+  tertiary: 8
+  residential: 6
+  service: 4
+  track: 3
+
+split:
+  train: 0.70
+  val: 0.15
+  test: 0.15
+
+# 按文件主名填写 urban/rural；未填写时为 unknown。
+scenes: {}
+
+# 不完整标注不能把“未标注”直接当作负样本。
+# 1号约90%完整：未标注区域可作为低权重背景；2号及OSM默认样本只贡献正样本。
+label_quality:
+  default:
+    unlabeled_policy: ignore
+    completeness: 0.0
+    positive_weight: 0.6
+    # 未标区域是255，不受此权重影响；只有显式 negative 图层生成的0会使用该权重。
+    negative_weight: 1.0
+  per_image:
+    "1":
+      unlabeled_policy: background
+      completeness: 0.90
+      positive_weight: 1.0
+      negative_weight: 0.5
+    "2":
+      unlabeled_policy: ignore
+      completeness: 0.30
+      positive_weight: 0.8
+      negative_weight: 1.0

@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+data/osm_raw/
+data/osm_cache/
+data/labels/masks/
+data/datasets/
+trainModel/runs/
+getBuildAndRoad/outputs/
+
+*.pt
+*.pth
+*.onnx
+data
